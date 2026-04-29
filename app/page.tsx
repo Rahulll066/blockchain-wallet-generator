@@ -16,8 +16,8 @@ export default function Home() {
       </div>
 
       {/* HERO SECTION */}
-      <section className="min-h-screen flex items-center justify-center px-6 pt-28">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-14 items-center">
+      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 pt-32 sm:pt-28">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-14 items-center">
           {/* Left Content */}
           <div>
             <motion.p
@@ -32,7 +32,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="mt-6 text-5xl md:text-7xl font-black leading-tight"
+              className="mt-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight"
             >
               Generate Your
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400">
@@ -52,17 +52,23 @@ export default function Home() {
             </motion.p>
 
             <div className="mt-10 flex flex-col sm:flex-row gap-4">
-              <button className="px-8 py-4 rounded-full bg-purple-600 hover:bg-purple-500 transition font-semibold shadow-lg shadow-purple-600/20">
+              <a
+                href="/select-wallet"
+                className="px-8 py-4 rounded-full bg-purple-600 hover:bg-purple-500 transition font-semibold shadow-lg shadow-purple-600/20 text-center"
+              >
                 Generate Wallet
-              </button>
+              </a>
 
-              <button className="px-8 py-4 rounded-full border border-white/10 hover:bg-white/5 transition font-semibold">
+              <a
+                href="/features"
+                className="px-8 py-4 rounded-full border border-white/10 hover:bg-white/5 transition font-semibold text-center"
+              >
                 Explore Features
-              </button>
+              </a>
             </div>
 
             {/* Stats */}
-            <div className="mt-12 grid grid-cols-3 gap-5 max-w-lg">
+            <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 max-w-lg">
               {[
                 ["2+", "Chains"],
                 ["100%", "Client Side"],
@@ -70,10 +76,10 @@ export default function Home() {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl bg-white/5 border border-white/10 p-4 text-center"
+                  className="rounded-2xl bg-white/5 border border-white/10 p-3 sm:p-4 text-center"
                 >
-                  <h3 className="text-2xl font-bold">{item[0]}</h3>
-                  <p className="text-sm text-gray-400 mt-1">{item[1]}</p>
+                  <h3 className="text-xl sm:text-2xl font-bold">{item[0]}</h3>
+                  <p className="text-xs sm:text-sm text-gray-400 mt-1">{item[1]}</p>
                 </div>
               ))}
             </div>
@@ -84,7 +90,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
-            className="rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-xl p-7"
+            className="rounded-[24px] sm:rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-xl p-4 sm:p-7"
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold">Wallet Preview</h3>
@@ -125,19 +131,19 @@ export default function Home() {
       </section>
 
       {/* LEARNING SECTION */}
-      <section id="learn" className="max-w-7xl mx-auto px-6 py-24">
+      <section id="learn" className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
         <div className="text-center max-w-3xl mx-auto">
-          <p className="text-purple-400 font-medium">Learn Web3 Basics</p>
-          <h2 className="mt-3 text-4xl md:text-5xl font-black">
+          <p className="text-purple-400 font-medium text-sm sm:text-base">Learn Web3 Basics</p>
+          <h2 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-black">
             Understand How Wallets Work
           </h2>
-          <p className="mt-5 text-gray-400 leading-8">
+          <p className="mt-5 text-gray-400 leading-8 text-sm sm:text-base">
             Learn the fundamentals of blockchain wallets, keys, recovery
             phrases, and popular crypto networks before generating your own.
           </p>
         </div>
 
-        <div className="mt-16 grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="mt-12 sm:mt-16 grid md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
           {[
             {
               title: "Seed Phrase",
@@ -159,29 +165,29 @@ export default function Home() {
             <motion.div
               whileHover={{ y: -6 }}
               key={i}
-              className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-7"
+              className="rounded-2xl sm:rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-5 sm:p-7"
             >
               <div className="w-12 h-12 rounded-2xl bg-purple-600/20 flex items-center justify-center text-xl mb-5">
                 🔐
               </div>
 
-              <h3 className="text-2xl font-bold">{item.title}</h3>
-              <p className="mt-3 text-gray-400 leading-7">{item.desc}</p>
+              <h3 className="text-lg sm:text-2xl font-bold">{item.title}</h3>
+              <p className="mt-3 text-gray-400 leading-7 text-sm sm:text-base">{item.desc}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Ethereum vs Solana */}
-        <div className="mt-20 grid md:grid-cols-2 gap-8">
-          <div className="rounded-[28px] border border-white/10 bg-gradient-to-br from-purple-600/20 to-transparent p-8">
+        <div className="mt-16 sm:mt-20 grid md:grid-cols-2 gap-4 sm:gap-8">
+          <div className="rounded-[20px] sm:rounded-[28px] border border-white/10 bg-gradient-to-br from-purple-600/20 to-transparent p-6 sm:p-8">
             <div className="flex items-center justify-between">
-              <h3 className="text-3xl font-bold">Ethereum</h3>
-              <span className="text-sm px-3 py-1 rounded-full bg-purple-500/15 text-purple-300">
+              <h3 className="text-2xl sm:text-3xl font-bold">Ethereum</h3>
+              <span className="text-xs sm:text-sm px-3 py-1 rounded-full bg-purple-500/15 text-purple-300">
                 Smart Contracts
               </span>
             </div>
 
-            <ul className="mt-6 space-y-4 text-gray-300">
+            <ul className="mt-6 space-y-4 text-gray-300 text-sm sm:text-base">
               <li>• Best for DeFi & NFTs</li>
               <li>• Large developer ecosystem</li>
               <li>• Highly secure decentralized network</li>
@@ -189,15 +195,15 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-gradient-to-br from-blue-600/20 to-transparent p-8">
+          <div className="rounded-[20px] sm:rounded-[28px] border border-white/10 bg-gradient-to-br from-blue-600/20 to-transparent p-6 sm:p-8">
             <div className="flex items-center justify-between">
-              <h3 className="text-3xl font-bold">Solana</h3>
-              <span className="text-sm px-3 py-1 rounded-full bg-blue-500/15 text-blue-300">
+              <h3 className="text-2xl sm:text-3xl font-bold">Solana</h3>
+              <span className="text-xs sm:text-sm px-3 py-1 rounded-full bg-blue-500/15 text-blue-300">
                 High Speed
               </span>
             </div>
 
-            <ul className="mt-6 space-y-4 text-gray-300">
+            <ul className="mt-6 space-y-4 text-gray-300 text-sm sm:text-base">
               <li>• Ultra-fast transactions</li>
               <li>• Very low gas fees</li>
               <li>• Great for scalable apps</li>
