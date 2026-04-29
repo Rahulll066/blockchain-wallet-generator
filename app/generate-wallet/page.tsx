@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import {
   Copy,
   Check,
@@ -23,7 +23,7 @@ interface Wallet {
   blockchain: string;
 }
 
-export default function GenerateWallet() {
+function GenerateWalletContent() {
   const searchParams = useSearchParams();
   const blockchain = searchParams.get("blockchain") || "ethereum";
 
@@ -107,11 +107,11 @@ export default function GenerateWallet() {
     if (!wallet) return;
 
     const walletData = {
-      blockchain: wallet.blockchain,
-      address: wallet.address,
-      publicKey: wallet.publicKey,
-      privateKey: wallet.privateKey,
-      seedPhrase: wallet.seedPhrase,
+      blockchain: wallet!.blockchain,
+      address: wallet!.address,
+      publicKey: wallet!.publicKey,
+      privateKey: wallet!.privateKey,
+      seedPhrase: wallet!.seedPhrase,
       createdAt: new Date().toISOString(),
     };
 
@@ -124,7 +124,7 @@ export default function GenerateWallet() {
     const a = document.createElement("a");
 
     a.href = url;
-    a.download = `${wallet.blockchain.toLowerCase()}-wallet.json`;
+    a.download = `${wallet!.blockchain.toLowerCase()}-wallet.json`;
     a.click();
 
     URL.revokeObjectURL(url);
@@ -132,7 +132,7 @@ export default function GenerateWallet() {
 
   if (!wallet) return null;
 
-  const secretWords = wallet.seedPhrase.split(" ");
+  const secretWords = wallet!.seedPhrase.split(" ");
 
   return (
     <main className="min-h-screen bg-[#050505] text-white overflow-x-hidden">
@@ -153,7 +153,7 @@ export default function GenerateWallet() {
           >
             <span className="text-xl">{current.icon}</span>
             <span className="font-semibold">
-              {wallet.blockchain} Wallet Generated
+              {wallet!.blockchain} Wallet Generated
             </span>
           </div>
 
@@ -214,7 +214,7 @@ export default function GenerateWallet() {
               {showSeed && (
                 <button
                   onClick={() =>
-                    copyText(wallet.seedPhrase, "seed")
+                    copyText(wallet!.seedPhrase, "seed")
                   }
                   className="mt-6 px-5 py-3 rounded-xl bg-red-500/15 hover:bg-red-500/20 flex items-center gap-2"
                 >
@@ -260,13 +260,13 @@ export default function GenerateWallet() {
                   !showPrivate ? "blur-sm select-none" : ""
                 }`}
               >
-                {wallet.privateKey}
+                {wallet!.privateKey}
               </div>
 
               {showPrivate && (
                 <button
                   onClick={() =>
-                    copyText(wallet.privateKey, "private")
+                    copyText(wallet!.privateKey, "private")
                   }
                   className="mt-6 px-5 py-3 rounded-xl bg-yellow-500/15 hover:bg-yellow-500/20 flex items-center gap-2"
                 >
@@ -296,12 +296,12 @@ export default function GenerateWallet() {
               </p>
 
               <div className="mt-6 rounded-2xl bg-black/30 p-5 break-all text-sm">
-                {wallet.address}
+                {wallet!.address}
               </div>
 
               <button
                 onClick={() =>
-                  copyText(wallet.address, "address")
+                  copyText(wallet!.address, "address")
                 }
                 className="mt-6 px-5 py-3 rounded-xl bg-green-500/15 hover:bg-green-500/20 flex items-center gap-2"
               >
@@ -333,7 +333,7 @@ export default function GenerateWallet() {
                     Network
                   </p>
                   <p className="font-semibold">
-                    {wallet.blockchain}
+                    {wallet!.blockchain}
                   </p>
                 </div>
 
@@ -408,5 +408,13 @@ export default function GenerateWallet() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function GenerateWallet() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GenerateWalletContent />
+    </Suspense>
   );
 }
