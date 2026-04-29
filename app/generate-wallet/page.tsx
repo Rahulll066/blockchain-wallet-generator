@@ -4,7 +4,16 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Copy, Check, RotateCcw } from "lucide-react";
+import {
+  Copy,
+  Check,
+  RefreshCcw,
+  Eye,
+  EyeOff,
+  Shield,
+  Download,
+} from "lucide-react";
+import Navbar from "../components/Navbar";
 
 interface Wallet {
   seedPhrase: string;
@@ -17,315 +26,387 @@ interface Wallet {
 export default function GenerateWallet() {
   const searchParams = useSearchParams();
   const blockchain = searchParams.get("blockchain") || "ethereum";
+
   const [wallet, setWallet] = useState<Wallet | null>(null);
-  const [copied, setCopied] = useState<string | null>(null);
-  const [showPrivateKey, setShowPrivateKey] = useState(false);
-  const [showSeedPhrase, setShowSeedPhrase] = useState(false);
+  const [copied, setCopied] = useState("");
+  const [showSeed, setShowSeed] = useState(false);
+  const [showPrivate, setShowPrivate] = useState(false);
 
-  // Generate mock wallet data (in real app, use ethers.js or solana/web3.js)
+  const networks = {
+    ethereum: {
+      name: "Ethereum",
+      icon: "Ξ",
+      color: "from-purple-500 to-indigo-600",
+    },
+    solana: {
+      name: "Solana",
+      icon: "◎",
+      color: "from-emerald-500 to-cyan-600",
+    },
+  };
+
+  const current =
+    networks[blockchain as keyof typeof networks] ||
+    networks.ethereum;
+
+  const randomHex = (len: number) =>
+    Array.from({ length: len }, () =>
+      Math.floor(Math.random() * 16).toString(16)
+    ).join("");
+
+  const generateSeed = () => {
+    const words = [
+      "future",
+      "moon",
+      "wallet",
+      "secure",
+      "river",
+      "glass",
+      "rocket",
+      "chain",
+      "node",
+      "dream",
+      "alpha",
+      "stone",
+      "ocean",
+      "light",
+      "forest",
+      "code",
+      "token",
+      "smart",
+      "bridge",
+      "power",
+    ];
+
+    return Array.from({ length: 12 }, () =>
+      words[Math.floor(Math.random() * words.length)]
+    ).join(" ");
+  };
+
   const generateWallet = () => {
-    const generateRandomHex = (length: number) => {
-      return Array.from({ length }, () =>
-        Math.floor(Math.random() * 16).toString(16)
-      ).join("");
-    };
-
-    const generateSeedPhrase = () => {
-      const words = [
-        "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract",
-        "accent", "accept", "access", "accident", "account", "accuse", "achieve", "acid",
-        "acquire", "across", "act", "action", "active", "actor", "actual", "acts",
-      ];
-
-      return Array.from({ length: 12 }, () =>
-        words[Math.floor(Math.random() * words.length)]
-      ).join(" ");
-    };
-
-    const newWallet: Wallet = {
-      seedPhrase: generateSeedPhrase(),
-      privateKey: `0x${generateRandomHex(64)}`,
-      publicKey: `0x${generateRandomHex(128)}`,
-      address: `0x${generateRandomHex(40)}`,
-      blockchain: blockchain.charAt(0).toUpperCase() + blockchain.slice(1),
-    };
-
-    setWallet(newWallet);
+    setWallet({
+      seedPhrase: generateSeed(),
+      privateKey: `0x${randomHex(64)}`,
+      publicKey: `0x${randomHex(96)}`,
+      address: `0x${randomHex(40)}`,
+      blockchain: current.name,
+    });
   };
 
   useEffect(() => {
     generateWallet();
   }, [blockchain]);
 
-  const copyToClipboard = (text: string, key: string) => {
+  const copyText = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
     setCopied(key);
-    setTimeout(() => setCopied(null), 2000);
+    setTimeout(() => setCopied(""), 1800);
   };
 
-  const blockchainIcons: Record<string, string> = {
-    ethereum: "Ξ",
-    bitcoin: "₿",
-    solana: "◎",
-    cardano: "₳",
-  };
+  const downloadWallet = () => {
+    if (!wallet) return;
 
-  const blockchainColors: Record<string, string> = {
-    ethereum: "from-purple-500 to-purple-700",
-    bitcoin: "from-orange-500 to-orange-700",
-    solana: "from-green-500 to-green-700",
-    cardano: "from-blue-500 to-blue-700",
-  };
+    const walletData = {
+      blockchain: wallet.blockchain,
+      address: wallet.address,
+      publicKey: wallet.publicKey,
+      privateKey: wallet.privateKey,
+      seedPhrase: wallet.seedPhrase,
+      createdAt: new Date().toISOString(),
+    };
 
-  if (!wallet) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin text-4xl mb-4">⚙️</div>
-          <p>Generating wallet...</p>
-        </div>
-      </div>
+    const blob = new Blob(
+      [JSON.stringify(walletData, null, 2)],
+      { type: "application/json" }
     );
-  }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = `${wallet.blockchain.toLowerCase()}-wallet.json`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  if (!wallet) return null;
+
+  const secretWords = wallet.seedPhrase.split(" ");
 
   return (
-    <div className="min-h-screen bg-black text-white py-20 px-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="text-5xl">
-              {blockchainIcons[blockchain as keyof typeof blockchainIcons]}
-            </div>
-            <h1 className="text-5xl font-extrabold">{wallet.blockchain} Wallet</h1>
-          </div>
-          <p className="text-gray-400 text-lg">
-            Your secure blockchain wallet has been generated. Store these details safely.
-          </p>
-        </motion.div>
+    <main className="min-h-screen bg-[#050505] text-white overflow-x-hidden">
+      <Navbar />
 
-        {/* Wallet Details Grid */}
-        <div className="grid grid-cols-1 gap-6 mb-12">
-          {/* Seed Phrase */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-red-900/30 to-red-900/10 border border-red-700/50 rounded-xl p-8"
+      {/* Background */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-purple-700/20 blur-[140px]" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-700/20 blur-[140px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:26px_26px]" />
+      </div>
+
+      {/* Hero */}
+      <section className="pt-32 px-6 pb-12">
+        <div className="max-w-7xl mx-auto text-center">
+          <div
+            className={`inline-flex items-center gap-3 px-5 py-2 rounded-full bg-gradient-to-r ${current.color}`}
           >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-bold flex items-center gap-2">
-                  🔐 Seed Phrase (BIP39)
-                </h3>
-                <p className="text-sm text-gray-400 mt-1">
-                  Keep this safe. Anyone with this phrase can access your wallet.
-                </p>
-              </div>
-              <button
-                onClick={() => setShowSeedPhrase(!showSeedPhrase)}
-                className="px-4 py-2 bg-red-700/50 hover:bg-red-700 rounded-lg text-sm font-semibold transition-colors"
-              >
-                {showSeedPhrase ? "Hide" : "Show"}
-              </button>
-            </div>
+            <span className="text-xl">{current.icon}</span>
+            <span className="font-semibold">
+              {wallet.blockchain} Wallet Generated
+            </span>
+          </div>
 
-            <div className={`relative ${!showSeedPhrase ? "blur-sm" : ""}`}>
-              <div className="bg-black/50 rounded-lg p-6 font-mono text-sm leading-relaxed break-words">
-                {wallet.seedPhrase}
-              </div>
-              {showSeedPhrase && (
+          <h1 className="mt-6 text-5xl md:text-7xl font-black">
+            Your Wallet is Ready
+          </h1>
+
+          <p className="mt-5 text-lg text-gray-400 max-w-3xl mx-auto leading-8">
+            Save your recovery phrase securely. Anyone with your
+            private key or seed phrase can access your wallet.
+          </p>
+        </div>
+      </section>
+
+      {/* Main */}
+      <section className="px-6 pb-20">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
+          {/* Left Side */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Seed Phrase */}
+            <div className="rounded-[30px] border border-red-500/20 bg-red-500/5 p-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-black">
+                    Seed Phrase
+                  </h2>
+                  <p className="mt-2 text-gray-400">
+                    12-word recovery phrase
+                  </p>
+                </div>
+
                 <button
-                  onClick={() => copyToClipboard(wallet.seedPhrase, "seed")}
-                  className="absolute top-4 right-4 p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                  onClick={() => setShowSeed(!showSeed)}
+                  className="px-4 py-2 rounded-xl bg-white/5 border border-white/10"
+                >
+                  {showSeed ? <EyeOff /> : <Eye />}
+                </button>
+              </div>
+
+              <div
+                className={`mt-7 grid grid-cols-2 md:grid-cols-3 gap-4 ${
+                  !showSeed ? "blur-sm select-none" : ""
+                }`}
+              >
+                {secretWords.map((word, i) => (
+                  <div
+                    key={i}
+                    className="rounded-2xl bg-black/30 px-4 py-3"
+                  >
+                    <span className="text-gray-500 mr-2">
+                      {i + 1}.
+                    </span>
+                    {word}
+                  </div>
+                ))}
+              </div>
+
+              {showSeed && (
+                <button
+                  onClick={() =>
+                    copyText(wallet.seedPhrase, "seed")
+                  }
+                  className="mt-6 px-5 py-3 rounded-xl bg-red-500/15 hover:bg-red-500/20 flex items-center gap-2"
                 >
                   {copied === "seed" ? (
-                    <Check size={18} className="text-green-400" />
+                    <>
+                      <Check size={18} />
+                      Copied
+                    </>
                   ) : (
-                    <Copy size={18} />
+                    <>
+                      <Copy size={18} />
+                      Copy Seed Phrase
+                    </>
                   )}
                 </button>
               )}
             </div>
-          </motion.div>
 
-          {/* Private Key */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-yellow-900/30 to-yellow-900/10 border border-yellow-700/50 rounded-xl p-8"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-bold flex items-center gap-2">
-                  🔑 Private Key
-                </h3>
-                <p className="text-sm text-gray-400 mt-1">
-                  Never share this key. It signs your transactions.
-                </p>
+            {/* Private Key */}
+            <div className="rounded-[30px] border border-yellow-500/20 bg-yellow-500/5 p-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-black">
+                    Private Key
+                  </h2>
+                  <p className="mt-2 text-gray-400">
+                    Never share this key
+                  </p>
+                </div>
+
+                <button
+                  onClick={() =>
+                    setShowPrivate(!showPrivate)
+                  }
+                  className="px-4 py-2 rounded-xl bg-white/5 border border-white/10"
+                >
+                  {showPrivate ? <EyeOff /> : <Eye />}
+                </button>
               </div>
-              <button
-                onClick={() => setShowPrivateKey(!showPrivateKey)}
-                className="px-4 py-2 bg-yellow-700/50 hover:bg-yellow-700 rounded-lg text-sm font-semibold transition-colors"
-              >
-                {showPrivateKey ? "Hide" : "Show"}
-              </button>
-            </div>
 
-            <div className={`relative ${!showPrivateKey ? "blur-sm" : ""}`}>
-              <div className="bg-black/50 rounded-lg p-4 font-mono text-sm break-all">
+              <div
+                className={`mt-6 rounded-2xl bg-black/30 p-5 break-all text-sm ${
+                  !showPrivate ? "blur-sm select-none" : ""
+                }`}
+              >
                 {wallet.privateKey}
               </div>
-              {showPrivateKey && (
+
+              {showPrivate && (
                 <button
-                  onClick={() => copyToClipboard(wallet.privateKey, "private")}
-                  className="absolute top-4 right-4 p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                  onClick={() =>
+                    copyText(wallet.privateKey, "private")
+                  }
+                  className="mt-6 px-5 py-3 rounded-xl bg-yellow-500/15 hover:bg-yellow-500/20 flex items-center gap-2"
                 >
                   {copied === "private" ? (
-                    <Check size={18} className="text-green-400" />
+                    <>
+                      <Check size={18} />
+                      Copied
+                    </>
                   ) : (
-                    <Copy size={18} />
+                    <>
+                      <Copy size={18} />
+                      Copy Private Key
+                    </>
                   )}
                 </button>
               )}
             </div>
-          </motion.div>
 
-          {/* Public Key */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-gradient-to-br from-green-900/30 to-green-900/10 border border-green-700/50 rounded-xl p-8"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-bold flex items-center gap-2">
-                  📤 Public Key
-                </h3>
-                <p className="text-sm text-gray-400 mt-1">
-                  Safe to share. Used to verify your signatures.
-                </p>
+            {/* Public Address */}
+            <div className="rounded-[30px] border border-green-500/20 bg-green-500/5 p-8">
+              <h2 className="text-3xl font-black">
+                Public Address
+              </h2>
+
+              <p className="mt-2 text-gray-400">
+                Share to receive funds
+              </p>
+
+              <div className="mt-6 rounded-2xl bg-black/30 p-5 break-all text-sm">
+                {wallet.address}
               </div>
-              <button
-                onClick={() => copyToClipboard(wallet.publicKey, "public")}
-                className="px-4 py-2 bg-green-700/50 hover:bg-green-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
-              >
-                {copied === "public" ? (
-                  <>
-                    <Check size={18} className="text-green-400" /> Copied
-                  </>
-                ) : (
-                  <>
-                    <Copy size={18} /> Copy
-                  </>
-                )}
-              </button>
-            </div>
 
-            <div className="bg-black/50 rounded-lg p-4 font-mono text-sm break-all">
-              {wallet.publicKey}
-            </div>
-          </motion.div>
-
-          {/* Wallet Address */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-gradient-to-br from-blue-900/30 to-blue-900/10 border border-blue-700/50 rounded-xl p-8"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-bold flex items-center gap-2">
-                  📍 Wallet Address
-                </h3>
-                <p className="text-sm text-gray-400 mt-1">
-                  Your receiving address. Share this to receive funds.
-                </p>
-              </div>
               <button
-                onClick={() => copyToClipboard(wallet.address, "address")}
-                className="px-4 py-2 bg-blue-700/50 hover:bg-blue-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
+                onClick={() =>
+                  copyText(wallet.address, "address")
+                }
+                className="mt-6 px-5 py-3 rounded-xl bg-green-500/15 hover:bg-green-500/20 flex items-center gap-2"
               >
                 {copied === "address" ? (
                   <>
-                    <Check size={18} className="text-green-400" /> Copied
+                    <Check size={18} />
+                    Copied
                   </>
                 ) : (
                   <>
-                    <Copy size={18} /> Copy
+                    <Copy size={18} />
+                    Copy Address
                   </>
                 )}
               </button>
             </div>
+          </div>
 
-            <div className="bg-black/50 rounded-lg p-4 font-mono text-sm break-all">
-              {wallet.address}
+          {/* Right Sidebar */}
+          <div className="space-y-8">
+            <div className="rounded-[30px] border border-white/10 bg-white/5 p-8">
+              <h3 className="text-2xl font-black">
+                Wallet Details
+              </h3>
+
+              <div className="mt-6 space-y-5">
+                <div>
+                  <p className="text-gray-500 text-sm">
+                    Network
+                  </p>
+                  <p className="font-semibold">
+                    {wallet.blockchain}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-gray-500 text-sm">
+                    Status
+                  </p>
+                  <p className="font-semibold text-green-400">
+                    Active
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-gray-500 text-sm">
+                    Security
+                  </p>
+                  <p className="font-semibold">
+                    Client Side
+                  </p>
+                </div>
+              </div>
             </div>
-          </motion.div>
+
+            <div className="rounded-[30px] border border-white/10 bg-white/5 p-8">
+              <div className="flex items-center gap-3">
+                <Shield className="text-purple-400" />
+                <h3 className="text-2xl font-black">
+                  Safety Tips
+                </h3>
+              </div>
+
+              <ul className="mt-6 space-y-4 text-gray-400">
+                <li>• Store phrase offline</li>
+                <li>• Never share keys</li>
+                <li>• Verify addresses</li>
+                <li>• Backup safely</li>
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <button
+                onClick={generateWallet}
+                className="w-full px-6 py-4 rounded-2xl bg-purple-600 hover:bg-purple-500 font-semibold flex items-center justify-center gap-2"
+              >
+                <RefreshCcw size={18} />
+                Generate New Wallet
+              </button>
+
+              <button
+                onClick={downloadWallet}
+                className="w-full px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 font-semibold flex items-center justify-center gap-2"
+              >
+                <Download size={18} />
+                Download Wallet
+              </button>
+
+              <Link
+                href="/select-wallet"
+                className="block text-center w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 font-semibold"
+              >
+                Change Network
+              </Link>
+
+              <Link
+                href="/"
+                className="block text-center w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 font-semibold"
+              >
+                Back Home
+              </Link>
+            </div>
+          </div>
         </div>
-
-        {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="flex gap-4 flex-wrap justify-center"
-        >
-          <button
-            onClick={generateWallet}
-            className="px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold transition-colors flex items-center gap-2 shadow-lg shadow-purple-500/50"
-          >
-            <RotateCcw size={18} /> Generate New Wallet
-          </button>
-
-          <Link href="/select-wallet">
-            <button className="px-8 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl font-semibold transition-colors">
-              Different Blockchain
-            </button>
-          </Link>
-
-          <Link href="/">
-            <button className="px-8 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl font-semibold transition-colors">
-              Back to Home
-            </button>
-          </Link>
-        </motion.div>
-
-        {/* Security Info */}
-        <motion.section
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mt-16 bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-xl p-8"
-        >
-          <h3 className="text-2xl font-bold mb-4">🛡️ Security Best Practices</h3>
-          <ul className="space-y-3 text-gray-400">
-            <li>
-              ✅ <strong className="text-white">Write down your seed phrase</strong> and store it in a safe place
-            </li>
-            <li>
-              ✅ <strong className="text-white">Never share your private key</strong> with anyone
-            </li>
-            <li>
-              ✅ <strong className="text-white">Use a hardware wallet</strong> for long-term holdings
-            </li>
-            <li>
-              ✅ <strong className="text-white">Test small amounts first</strong> before sending large transactions
-            </li>
-            <li>
-              ⚠️ <strong className="text-white">This is a demo wallet</strong> - for production, use official wallets like MetaMask, Phantom, or Ledger
-            </li>
-          </ul>
-        </motion.section>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

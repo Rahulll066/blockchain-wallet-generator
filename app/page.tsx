@@ -1,176 +1,211 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Navbar from "./components/Navbar";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center">
+    <main className="min-h-screen bg-[#050505] text-white overflow-x-hidden">
+      <Navbar />
+
+      {/* Background */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute top-0 left-0 w-80 h-80 bg-purple-700/30 blur-[140px]" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-700/30 blur-[140px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:26px_26px]" />
+      </div>
 
       {/* HERO SECTION */}
+      <section className="min-h-screen flex items-center justify-center px-6 pt-28">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-14 items-center">
+          {/* Left Content */}
+          <div>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-block px-4 py-2 rounded-full bg-purple-600/15 border border-purple-500/20 text-purple-300 text-sm font-medium"
+            >
+              Secure Wallet Infrastructure
+            </motion.p>
 
-      <section className="flex flex-col items-center justify-center text-center h-screen px-6">
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mt-6 text-5xl md:text-7xl font-black leading-tight"
+            >
+              Generate Your
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400">
+                Blockchain Wallet
+              </span>
+            </motion.h1>
 
-        <motion.h1
-          initial={{ opacity: 0, y: -40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-6xl font-extrabold mb-6"
-        >
-          Blockchain Wallet Generator
-        </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mt-6 text-gray-400 text-lg leading-8 max-w-xl"
+            >
+              Instantly create Ethereum and Solana wallets with seed phrases,
+              public keys, and private keys. Learn wallet architecture while
+              using a fast, modern, secure Web3 interface.
+            </motion.p>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="text-lg text-gray-400 max-w-2xl"
-        >
-          Create secure crypto wallets instantly. Learn how blockchain,
-          seed phrases, and public/private keys work while generating
-          your own wallet.
-        </motion.p>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4">
+              <button className="px-8 py-4 rounded-full bg-purple-600 hover:bg-purple-500 transition font-semibold shadow-lg shadow-purple-600/20">
+                Generate Wallet
+              </button>
 
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="mt-8 px-8 py-4 bg-purple-600 hover:bg-purple-700 rounded-xl text-lg font-bold"
-        >
-          Generate Wallet
-        </motion.button>
+              <button className="px-8 py-4 rounded-full border border-white/10 hover:bg-white/5 transition font-semibold">
+                Explore Features
+              </button>
+            </div>
 
+            {/* Stats */}
+            <div className="mt-12 grid grid-cols-3 gap-5 max-w-lg">
+              {[
+                ["2+", "Chains"],
+                ["100%", "Client Side"],
+                ["Secure", "Keys"],
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl bg-white/5 border border-white/10 p-4 text-center"
+                >
+                  <h3 className="text-2xl font-bold">{item[0]}</h3>
+                  <p className="text-sm text-gray-400 mt-1">{item[1]}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right UI Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-xl p-7"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold">Wallet Preview</h3>
+              <span className="text-xs px-3 py-1 rounded-full bg-green-500/15 text-green-400">
+                Ready
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-2xl bg-black/30 p-4 border border-white/5">
+                <p className="text-sm text-gray-400">Seed Phrase</p>
+                <p className="mt-2 text-sm leading-7 text-gray-200">
+                  apple moon future glass node wallet chain secure ...
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-black/30 p-4 border border-white/5">
+                <p className="text-sm text-gray-400">Public Address</p>
+                <p className="mt-2 text-sm break-all text-purple-300">
+                  0x84Ae9b3c7A2d...
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-black/30 p-4 border border-white/5">
+                <p className="text-sm text-gray-400">Network</p>
+                <div className="mt-3 flex gap-3">
+                  <span className="px-3 py-2 rounded-xl bg-purple-600/20 text-purple-300 text-sm">
+                    Ethereum
+                  </span>
+                  <span className="px-3 py-2 rounded-xl bg-blue-600/20 text-blue-300 text-sm">
+                    Solana
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
-      {/* WHAT IS BLOCKCHAIN */}
-
-      <section className="py-24 max-w-5xl text-center px-6">
-
-        <h2 className="text-4xl font-bold mb-8">What is Blockchain?</h2>
-
-        <p className="text-gray-400 text-lg leading-relaxed">
-          Blockchain is a decentralized digital ledger that records
-          transactions across a distributed network of computers.
-          Once recorded, transactions cannot be altered which makes
-          blockchain highly secure and transparent.
-        </p>
-
-      </section>
-
-      {/* WHAT IS A WALLET */}
-
-      <section className="py-24 max-w-5xl text-center px-6">
-
-        <h2 className="text-4xl font-bold mb-8">What is a Crypto Wallet?</h2>
-
-        <p className="text-gray-400 text-lg leading-relaxed">
-          A crypto wallet allows you to store, send, and receive
-          cryptocurrency. Instead of storing coins directly, a wallet
-          stores cryptographic keys that give access to your funds
-          on the blockchain.
-        </p>
-
-      </section>
-
-      {/* SEED PHRASE */}
-
-      <section className="py-24 max-w-5xl text-center px-6">
-
-        <h2 className="text-4xl font-bold mb-8">What is a Seed Phrase?</h2>
-
-        <p className="text-gray-400 text-lg leading-relaxed">
-          A seed phrase is a set of 12 or 24 randomly generated words
-          that acts as the master key to your crypto wallet.
-          It allows you to recover your wallet if you lose access
-          to your device. Anyone with your seed phrase can control
-          your funds, so it must be kept secure.
-        </p>
-
-      </section>
-
-      {/* PUBLIC PRIVATE KEY */}
-
-      <section className="py-24 grid md:grid-cols-2 gap-12 max-w-5xl px-6">
-
-        <div className="bg-gray-900 p-8 rounded-xl">
-          <h3 className="text-2xl font-bold mb-4">Public Key</h3>
-
-          <p className="text-gray-400">
-            The public key is your wallet address. It can be shared
-            with others to receive cryptocurrency. Anyone can send
-            funds to this address.
+      {/* LEARNING SECTION */}
+      <section id="learn" className="max-w-7xl mx-auto px-6 py-24">
+        <div className="text-center max-w-3xl mx-auto">
+          <p className="text-purple-400 font-medium">Learn Web3 Basics</p>
+          <h2 className="mt-3 text-4xl md:text-5xl font-black">
+            Understand How Wallets Work
+          </h2>
+          <p className="mt-5 text-gray-400 leading-8">
+            Learn the fundamentals of blockchain wallets, keys, recovery
+            phrases, and popular crypto networks before generating your own.
           </p>
         </div>
 
-        <div className="bg-gray-900 p-8 rounded-xl">
-          <h3 className="text-2xl font-bold mb-4">Private Key</h3>
+        <div className="mt-16 grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {[
+            {
+              title: "Seed Phrase",
+              desc: "A 12 or 24 word backup phrase used to recover wallet access.",
+            },
+            {
+              title: "Public Key",
+              desc: "Your wallet address used to receive crypto assets safely.",
+            },
+            {
+              title: "Private Key",
+              desc: "A secret key used to sign transactions and control funds.",
+            },
+            {
+              title: "Blockchain",
+              desc: "A decentralized ledger that stores secure transactions.",
+            },
+          ].map((item, i) => (
+            <motion.div
+              whileHover={{ y: -6 }}
+              key={i}
+              className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-7"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-purple-600/20 flex items-center justify-center text-xl mb-5">
+                🔐
+              </div>
 
-          <p className="text-gray-400">
-            The private key is a secret cryptographic key that gives
-            you control over your wallet. It is used to sign transactions
-            and must never be shared with anyone.
-          </p>
+              <h3 className="text-2xl font-bold">{item.title}</h3>
+              <p className="mt-3 text-gray-400 leading-7">{item.desc}</p>
+            </motion.div>
+          ))}
         </div>
 
-      </section>
+        {/* Ethereum vs Solana */}
+        <div className="mt-20 grid md:grid-cols-2 gap-8">
+          <div className="rounded-[28px] border border-white/10 bg-gradient-to-br from-purple-600/20 to-transparent p-8">
+            <div className="flex items-center justify-between">
+              <h3 className="text-3xl font-bold">Ethereum</h3>
+              <span className="text-sm px-3 py-1 rounded-full bg-purple-500/15 text-purple-300">
+                Smart Contracts
+              </span>
+            </div>
 
-      {/* SOLANA VS ETHEREUM */}
+            <ul className="mt-6 space-y-4 text-gray-300">
+              <li>• Best for DeFi & NFTs</li>
+              <li>• Large developer ecosystem</li>
+              <li>• Highly secure decentralized network</li>
+              <li>• Widely supported wallets</li>
+            </ul>
+          </div>
 
-      <section className="py-24 grid md:grid-cols-2 gap-12 max-w-5xl px-6">
+          <div className="rounded-[28px] border border-white/10 bg-gradient-to-br from-blue-600/20 to-transparent p-8">
+            <div className="flex items-center justify-between">
+              <h3 className="text-3xl font-bold">Solana</h3>
+              <span className="text-sm px-3 py-1 rounded-full bg-blue-500/15 text-blue-300">
+                High Speed
+              </span>
+            </div>
 
-        <div className="bg-gray-900 p-8 rounded-xl">
-          <h3 className="text-2xl font-bold mb-4">Solana</h3>
-
-          <p className="text-gray-400">
-            Solana is a high-performance blockchain designed for fast
-            transactions and low fees. It uses Proof of History (PoH)
-            along with Proof of Stake (PoS) to achieve high scalability.
-          </p>
+            <ul className="mt-6 space-y-4 text-gray-300">
+              <li>• Ultra-fast transactions</li>
+              <li>• Very low gas fees</li>
+              <li>• Great for scalable apps</li>
+              <li>• Growing ecosystem</li>
+            </ul>
+          </div>
         </div>
-
-        <div className="bg-gray-900 p-8 rounded-xl">
-          <h3 className="text-2xl font-bold mb-4">Ethereum</h3>
-
-          <p className="text-gray-400">
-            Ethereum is the most widely used blockchain for smart
-            contracts and decentralized applications (dApps).
-            It enables developers to build DeFi platforms,
-            NFTs, and other blockchain applications.
-          </p>
-        </div>
-
       </section>
-
-      {/* HOW WALLETS ARE CREATED */}
-
-      <section className="py-24 max-w-5xl text-center px-6">
-
-        <h2 className="text-4xl font-bold mb-8">
-          How Wallets Are Created
-        </h2>
-
-        <p className="text-gray-400 text-lg leading-relaxed">
-          Crypto wallets are created using cryptographic algorithms.
-          A random seed phrase is generated first. From the seed phrase,
-          a private key is derived using deterministic algorithms.
-          The public key is then generated from the private key,
-          which becomes your wallet address on the blockchain.
-        </p>
-
-      </section>
-
-      {/* CTA */}
-
-      <section className="py-24 text-center">
-
-        <h2 className="text-4xl font-bold mb-6">
-          Generate Your Wallet
-        </h2>
-
-        <button className="px-10 py-4 bg-purple-600 hover:bg-purple-700 rounded-xl text-lg font-bold">
-          Generate Wallet
-        </button>
-
-      </section>
-
-    </div>
+    </main>
   );
 }
